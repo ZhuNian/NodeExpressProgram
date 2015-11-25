@@ -1,9 +1,9 @@
 var express = require('express');
+var toDoList = require('../lib/toDoList');
 var router = express.Router();
 
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
+router.get('/', function (req, res, next){
+  res.render('toDolist');
 });
 
 module.exports = router;
