@@ -1,11 +1,64 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <script src="../node_modules/mithril/mithril.min.js"></script>
-  <title>my application</title>
-</head>
-<body>
-  <div>hello world!</div>
-</body>
-</html>
+{{#contentFor 'pageStyle'}}
+<style>
+  .to_do{
+    color: red;
+    display: inline-block;
+    margin-left:10%;
+  }
+  .finished{
+    color: blue;
+    display: inline-block;
+    margin-left:40%;
+  }
+  .checked{
+    margin-left:10rem;
+  }
+</style>
+{{/contentFor}}
+
+{{#contentFor 'pageScripts'}}
+<script>
+  var MyComponent = {
+    viewModel: {
+      toDo: [
+        {desc: 'mithril', checked: 'true'},
+        {desc: 'node', checked: 'true'},
+      ],
+      finished: [
+        {desc: 'english', checked: 'false'},
+        {desc: 'chinese', checked: 'false'}
+      ],
+      toDoListToggle: function(){
+        this.checked = !this.checked;
+      }
+    },
+    controller: myController,
+    view:myView
+  };
+  function myController(){
+    return MyComponent.viewModel;
+  }
+  var displayDomElements = function(list){
+    var elements = [];
+    list.map(function(l){
+      elements.push(m('div.list-item',[
+          m('span.desc', l.desc),
+        m('input.checked',{type:'checkbox',value:'yes',checked:l.checked,onchange:MyComponent.viewModel.toDoListToggle.bind(l)} )
+      ]))
+    });
+    return elements;
+  };
+
+  function myView(ctrl){
+    return m('div.to_do_list', [
+      m('div.to_do', displayDomElements(ctrl.toDo) ),
+      m('div.finished', displayDomElements(ctrl.finished))
+    ]);
+  }
+
+  m.mount(document.getElementById('content'), MyComponent);
+</script>
+{{/contentFor}}
+
+<h1 style="text-align: center">{{title}}</h1>
+<div id="content"></div>
