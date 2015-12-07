@@ -1,17 +1,41 @@
 {{#contentFor 'pageStyle'}}
 <style>
-  .to_do{
+  .to_do {
     color: red;
     display: inline-block;
-    margin-left:10%;
+    margin-left: 10%;
   }
-  .finished{
+
+  .finished {
     color: blue;
     display: inline-block;
-    margin-left:40%;
+    margin-left: 40%;
   }
-  .checkedbox{
-    margin-left:10rem;
+
+  .checkedbox {
+    margin-left: 10rem;
+  }
+
+  button {
+    background-color: blue;
+    color: white;
+    font-size: 1rem;
+    padding: 1rem;
+    margin: 1rem;
+  }
+
+  .btn-group {
+    display: block;
+  }
+
+  .editBtn {
+    background-color: palevioletred;
+    display: inline-block;
+  }
+
+  .addBtn {
+    display: inline-block;
+    background-color: cadetblue;
   }
 </style>
 {{/contentFor}}
@@ -24,20 +48,32 @@
         {desc: 'mithril', checkedToggle: true},
         {desc: 'node', checkedToggle: true},
         {desc: 'node2', checkedToggle: true},
-        {desc: 'node3', checkedToggle: true},
-        {desc: 'node4', checkedToggle: true},
         {desc: 'english', checkedToggle: false},
         {desc: 'chinese', checkedToggle: false},
         {desc: 'chinese2', checkedToggle: false},
-        {desc: 'chinese3', checkedToggle: false},
-        {desc: 'chinese4', checkedToggle: false}
       ],
-      toDoListToggle: function(){
-        this.checkedToggle = !this.checkedToggle;
-      }
+      toDoListToggle: function (item){
+        item.checkedToggle = !item.checkedToggle;
+      },
+      deleteItem: function (toDelete){
+        MyComponent.viewModel.toDo = MyComponent.viewModel.toDo.filter(function (item){
+          return item.desc != toDelete.desc;
+        })
+      },
+      editItem: function (item){
+        var retVal = prompt("description : ", item.desc);
+        MyComponent.viewModel.toDo = MyComponent.viewModel.toDo.map(function(l){
+          item.desc === l.desc ? l.desc = retVal : null;
+          return l;
+        });
+      },
+      addItem: function (){
+        var retVal = prompt("description : ", 'your description');
+        retVal !==  'your description' ? MyComponent.viewModel.toDo.push({desc: retVal, checkedToggle: false}) : null;
+      },
     },
     controller: myController,
-    view:myView
+    view: myView
   };
   m.mount(document.getElementById('content'), MyComponent);
 
@@ -48,11 +84,17 @@
     var toDos = [];
     var finished = [];
     var temp = [];
-    list.forEach(function(l){
+    list.forEach(function (l){
       temp = l.checkedToggle ? toDos : finished;
-      temp.push(m('div.list-item',[
+      temp.push(m('div.list-item', [
         m('span.desc', l.desc),
-        m('input.checkedbox',{type:'checkbox',checked:l.checkedToggle,onchange:MyComponent.viewModel.toDoListToggle.bind(l)} )
+        m('input.checkedbox', {
+          type: 'checkbox',
+          checked: l.checkedToggle,
+          onchange: MyComponent.viewModel.toDoListToggle.bind(null, l)
+        }),
+        m('button.deleteBtn', {onclick: MyComponent.viewModel.deleteItem.bind(null, l)}, 'delete'),
+        m('button.editBtn', {onclick: MyComponent.viewModel.editItem.bind(null,l)}, 'Edit')
       ]));
     });
     var listDom = {
@@ -60,11 +102,16 @@
       finished: finished
     };
     return listDom;
-  };
+  }
+  ;
+
   function myView(ctrl){
-    var toDoList =displayDomElements( ctrl.toDo);
+    var toDoList = displayDomElements(ctrl.toDo);
     return m('div.to_do_list', [
-      m('div.to_do', toDoList.toDos ),
+      m('.btn-group', [
+        m('button.addBtn', {onclick: MyComponent.viewModel.addItem.bind(ctrl)}, 'ADD'),
+      ]),
+      m('div.to_do', toDoList.toDos),
       m('div.finished', toDoList.finished)
     ]);
   }
