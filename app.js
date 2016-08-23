@@ -12,6 +12,6 @@ app.set('view engine', 'html');
 
 app.engine('html', hbs.express3());
 
-app.use('/', routes);
+app.use('/todo', routes);
 
 module.exports = app;
