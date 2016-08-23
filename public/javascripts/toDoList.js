@@ -2,19 +2,19 @@
   var MyComponent = {
     viewModel: {
       toDo: [
-        {desc: 'mithril', checkedToggle: true},
-        {desc: 'node', checkedToggle: true},
-        {desc: 'node2', checkedToggle: true},
-        {desc: 'english', checkedToggle: false},
-        {desc: 'chinese', checkedToggle: false},
-        {desc: 'chinese2', checkedToggle: false},
+        {id: 0, desc: 'mithril', checkedToggle: true},
+        {id: 1, desc: 'node', checkedToggle: true},
+        {id: 2, desc: 'node2', checkedToggle: true},
+        {id: 3, desc: 'english', checkedToggle: false},
+        {id: 4, desc: 'chinese', checkedToggle: false},
+        {id: 5, desc: 'chinese2', checkedToggle: false},
       ],
       toDoListToggle: function (item){
         item.checkedToggle = !item.checkedToggle;
       },
       deleteItem: function (toDelete){
         MyComponent.viewModel.toDo = MyComponent.viewModel.toDo.filter(function (item){
-          return item.desc != toDelete.desc;
+          return item.id != toDelete.id;
         })
       },
       editItem: function (item){
@@ -41,12 +41,14 @@
     var temp = [];
     list.forEach(function (l){
       temp = l.checkedToggle ? toDos : finished;
-      temp.push(m('div.list-item', [
+      temp.push(m('div.list-item', {
+        key: l.id
+      }, [
         m('span.desc', l.desc),
         m('input.checkedbox', {
           type: 'checkbox',
           checked: l.checkedToggle,
-          onchange: MyComponent.viewModel.toDoListToggle.bind(null, l)
+          onclick: MyComponent.viewModel.toDoListToggle.bind(null, l)
         }),
         m('button.deleteBtn', {onclick: MyComponent.viewModel.deleteItem.bind(null, l)}, 'delete'),
         m('button.editBtn', {onclick: MyComponent.viewModel.editItem.bind(null,l)}, 'Edit')
@@ -69,5 +71,6 @@
       m('div.finished', toDoList.finished)
     ]);
   }
+
   m.mount(document.getElementById('content'), MyComponent);
 })(window);
